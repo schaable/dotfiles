@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/bin/sh
+
+set -e
+set -x
 
 # Copy dotfiles
 cp ~/dotfiles/.zshrc ~/.zshrc
