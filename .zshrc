@@ -148,13 +148,13 @@ lpublish() {
       expect eof
     "
   fi
-  npm_config_registry=http://127.0.0.1:4873 pnpm changeset publish "$@"
+  pnpm changeset publish "$@"
 }
 
 # Wrap package managers to use local Verdaccio if running
 npm() {
   if [ -f ~/.local-verdaccio ]; then
-    NPM_CONFIG_REGISTRY=$(<~/.local-verdaccio) command npm "$@"
+    npm_config_registry=$(<~/.local-verdaccio) command npm "$@"
   else
     command npm "$@"
   fi
@@ -162,7 +162,7 @@ npm() {
 
 npx() {
   if [ -f ~/.local-verdaccio ]; then
-    NPM_CONFIG_REGISTRY=$(<~/.local-verdaccio) command npx "$@"
+    npm_config_registry=$(<~/.local-verdaccio) command npx "$@"
   else
     command npx "$@"
   fi
@@ -170,7 +170,7 @@ npx() {
 
 pnpm() {
   if [ -f ~/.local-verdaccio ]; then
-    NPM_CONFIG_REGISTRY=$(<~/.local-verdaccio) command pnpm "$@"
+    npm_config_registry=$(<~/.local-verdaccio) command pnpm "$@"
   else
     command pnpm "$@"
   fi
