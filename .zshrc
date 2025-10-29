@@ -37,10 +37,10 @@ newpnpm() {
   fi
   mkdir -p "/tmp/pnpmproject-${dir_suffix}"
   cd "/tmp/pnpmproject-${dir_suffix}"
-  npm init -y
+  pnpm init
 }
 
-alias newhh='newpnpm && pnpm add hardhat && npx hardhat init'
+alias newhh='newpnpm && pnpm add hardhat && pnpm hardhat --init'
 alias lastpnpm='cd "/tmp/pnpmproject-$(ls -1d /tmp/* | grep pnpmproject | tail -n +2 | wc -l | sed '\''s/ //g'\'')"'
 
 # pnpm setup
@@ -132,6 +132,23 @@ EOF
   trap cleanup EXIT
 
   VERDACCIO_PUBLIC_URL="$URL" verdaccio --config "$CONFIG"
+}
+
+lpublish() {
+  if ! npm whoami --registry http://127.0.0.1:4873 &>/dev/null; then
+    echo "Logging in..."
+    expect -c "
+      spawn npm adduser --registry http://127.0.0.1:4873
+      expect \"Username:\"
+      send \"dev\r\"
+      expect \"Password:\"
+      send \"dev\r\"
+      expect \"Email:\"
+      send \"dev@test.com\r\"
+      expect eof
+    "
+  fi
+  npm_config_registry=http://127.0.0.1:4873 pnpm changeset publish "$@"
 }
 
 # Wrap package managers to use local Verdaccio if running
