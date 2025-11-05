@@ -99,6 +99,17 @@ gprp() {
   git push "git@github.com:${head_repo}.git" "HEAD:${head_ref}"
 }
 
+# Push to PR branch
+gprf() {
+  if [ ! -f "$PR_META_FILE" ]; then
+    echo "No PR metadata found. Run gprl first."
+    return 1
+  fi
+
+  read head_repo head_ref < "$PR_META_FILE"
+  git push -f "git@github.com:${head_repo}.git" "HEAD:${head_ref}"
+}
+
 # Start ephemeral Verdaccio server
 lverdaccio() {
   TMPDIR=$(mktemp -d)
@@ -173,5 +184,31 @@ pnpm() {
     npm_config_registry=$(<~/.local-verdaccio) command pnpm "$@"
   else
     command pnpm "$@"
+  fi
+}
+
+touch_sol() {
+  if [ -z "$1" ]; then
+    echo "Usage: touch_sol <file.sol>"
+    return 1
+  fi
+
+  if [ ! -f "$1" ]; then
+    echo "File not found: $1"
+    return 1
+  fi
+
+  local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+  local comment="// Updated: $timestamp"
+
+  # Check if "Updated" comment already exists
+  if grep -q "^// Updated:" "$1"; then
+    # Update existing timestamp
+    sed -i "s|^// Updated:.*|$comment|" "$1"
+  else
+    # Insert blank line and comment after pragma line
+    sed -i "/^pragma solidity/a\\
+\\
+$comment" "$1"
   fi
 }
