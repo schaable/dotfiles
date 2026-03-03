@@ -140,7 +140,7 @@ EOF
     rm -rf "$TMPDIR"
     echo "Cleaned up."
   }
-  trap cleanup EXIT
+  trap cleanup EXIT SIGINT SIGTERM
 
   VERDACCIO_PUBLIC_URL="$URL" verdaccio --config "$CONFIG"
 }
